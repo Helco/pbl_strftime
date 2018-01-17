@@ -36,11 +36,12 @@ public:
 	char compareBuffer[ResultBufferSize];
 	size_t expCharsWritten = SIZE_MAX;
 
-	struct tm* curTm;
+	struct tm curTm;
 
 	virtual void SetUpTime() {
 		time_t curTime = time(nullptr);
-		curTm = localtime(&curTime);
+		struct tm* curTmPtr = localtime(&curTime);
+		memcpy(&curTm, curTmPtr, sizeof(struct tm)); // we want to modify curTm safely
 	}
 
 	virtual void SetUp() override {
@@ -77,5 +78,9 @@ public:
 		}
 	}
 };
+
+#define EXPECT_MEMGUARD_RESULT(charsWritten, expectedBuffer) \
+	EXPECT_EQ(charsWritten, expCharsWritten); \
+	EXPECT_STREQ(expectedBuffer, buffer);
 
 #endif // FIXTURES_H
