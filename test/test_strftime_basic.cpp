@@ -14,23 +14,23 @@ namespace {
 	};
 
 	TEST_F(ArgumentSanity, BufferIsNullptr) {
-		EXPECT_EQ(0, strftime(nullptr, BufferSize, "abc", curTm));
+		EXPECT_EQ(0, pbl_strftime(nullptr, BufferSize, "abc", curTm));
 	}
 
 	TEST_F(ArgumentSanity, SizeIsNull) {
-		EXPECT_EQ(0, strftime(buffer, 0, "abc", curTm));
+		EXPECT_EQ(0, pbl_strftime(buffer, 0, "abc", curTm));
 	}
 
 	TEST_F(ArgumentSanity, FormatIsNullptr) {
-		EXPECT_EQ(0, strftime(buffer, BufferSize, nullptr, curTm));
+		EXPECT_EQ(0, pbl_strftime(buffer, BufferSize, nullptr, curTm));
 	}
 
 	TEST_F(ArgumentSanity, TmIsNullptr) {
-		EXPECT_EQ(0, strftime(buffer, BufferSize, "abc", nullptr));
+		EXPECT_EQ(0, pbl_strftime(buffer, BufferSize, "abc", nullptr));
 	}
 
 	TEST_F(ArgumentSanity, AllArgsInvalid) {
-		EXPECT_EQ(0, strftime(nullptr, 0, nullptr, nullptr));
+		EXPECT_EQ(0, pbl_strftime(nullptr, 0, nullptr, nullptr));
 	}
 
 	/*
@@ -41,7 +41,7 @@ namespace {
 	};
 
 	TEST_F(CopyText, NoText) {
-		expCharsWritten = strftime(buffer, BufferSize, "", &curTm);
+		expCharsWritten = pbl_strftime(buffer, BufferSize, "", &curTm);
 		EXPECT_MEMGUARD_RESULT(0, "");
 	}
 
@@ -91,15 +91,15 @@ namespace {
 #define TEST_SIMPLENUMERICS_LIMITS(name, var, format, min, max, padding) \
 	TEST_F(SimpleNumerics, name##Min) { \
 		curTm.var = min; \
-		expCharsWritten = strftime(buffer, BufferSize, format, &curTm); \
+		expCharsWritten = pbl_strftime(buffer, BufferSize, format, &curTm); \
 		EXPECT_MEMGUARD_RESULT(strlen(padding #min), buffer); \
 	} \
 	TEST_F(SimpleNumerics, name##max) { \
 		curTm.var = max; \
-		expCharsWritten = strftime(buffer, BufferSize, format, &curTm); \
+		expCharsWritten = pbl_strftime(buffer, BufferSize, format, &curTm); \
 		const char* expected = (max > 9 ? padding #max : #max); \
 		EXPECT_MEMGUARD_RESULT(strlen(expected), expected); \
-	} // remember: strftime behaviour is undefined when providing illegal values
+	} // remember: pbl_strftime behaviour is undefined when providing illegal values
 
 	// Century
 	TEST_F(SimpleNumerics, Century) {

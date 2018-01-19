@@ -41,7 +41,7 @@ public:
 
 	// a simple shortcut using the member variables
 	void c_strftime(const char* format) {
-		expCharsWritten = strftime(buffer, BufferSize, format, &curTm);
+		expCharsWritten = pbl_strftime(buffer, BufferSize, format, &curTm);
 	}
 
 	virtual void SetUpTime() {
