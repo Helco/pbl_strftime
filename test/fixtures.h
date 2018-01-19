@@ -1,8 +1,9 @@
 #ifndef FIXTURES_H
 #define FIXTURES_H
 #include <gtest/gtest.h>
-
 #include <stdlib.h>
+
+#include "../src/strftime.h"
 
 /*
  * SimpleFixture - a constant buffer size and the current time
@@ -37,6 +38,11 @@ public:
 	size_t expCharsWritten = SIZE_MAX;
 
 	struct tm curTm;
+
+	// a simple shortcut using the member variables
+	void c_strftime(const char* format) {
+		expCharsWritten = strftime(buffer, BufferSize, format, &curTm);
+	}
 
 	virtual void SetUpTime() {
 		time_t curTime = time(nullptr);
