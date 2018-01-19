@@ -62,6 +62,7 @@ endif()
 # pbl_strftime
 ###################################################################
 
+add_definitions(-DNOT_REBBLE_OS)
 set(sources_strftime
   src/strftime.c
   src/strftime.h
@@ -76,6 +77,9 @@ add_library(pbl_strftime ${sources_strftime} )
 set(sources_test_strftime
     test/test_fixtures.cpp
     test/test_strftime_basic.cpp
+    test/test_strftime_calcnums.cpp
+    test/test_strftime_text.cpp
+    test/test_strftime_composite.cpp
 
     test/fixtures.h
 )

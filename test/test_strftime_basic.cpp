@@ -29,10 +29,6 @@ namespace {
 		EXPECT_EQ(0, pbl_strftime(buffer, BufferSize, "abc", nullptr));
 	}
 
-	TEST_F(ArgumentSanity, AllArgsInvalid) {
-		EXPECT_EQ(0, pbl_strftime(nullptr, 0, nullptr, nullptr));
-	}
-
 	/*
 	 * Can it copy text?
 	 */
