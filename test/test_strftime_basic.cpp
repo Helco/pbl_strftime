@@ -80,7 +80,7 @@ namespace {
 #define TEST_SIMPLENUMERICS_LIMITS(name, var, format, min, max, padding) \
 	TEST_F(SimpleNumerics, name##Min) { \
 		curTm.var = min; \
-		EXPECT_MEMGUARD_RESULT(format, strlen(padding #min), buffer); \
+		EXPECT_MEMGUARD_RESULT(format, strlen(padding #min), padding #min); \
 	} \
 	TEST_F(SimpleNumerics, name##max) { \
 		curTm.var = max; \
