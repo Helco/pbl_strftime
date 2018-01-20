@@ -39,11 +39,6 @@ public:
 
 	struct tm curTm;
 
-	// a simple shortcut using the member variables
-	void c_strftime(const char* format) {
-		expCharsWritten = pbl_strftime(buffer, BufferSize, format, &curTm);
-	}
-
 	virtual void SetUpTime() {
 		time_t curTime = time(nullptr);
 		struct tm* curTmPtr = localtime(&curTime);
@@ -85,8 +80,9 @@ public:
 	}
 };
 
-#define EXPECT_MEMGUARD_RESULT(charsWritten, expectedBuffer) \
-	EXPECT_EQ(charsWritten, expCharsWritten); \
-	EXPECT_STREQ(expectedBuffer, buffer);
+#define EXPECT_MEMGUARD_RESULT(format, expectedResult, expectedBuffer) \
+	EXPECT_EQ(expectedResult, pbl_strftime(buffer, BufferSize, format, &curTm)); \
+	expCharsWritten = strlen(expectedBuffer); \
+	EXPECT_STREQ(expectedBuffer, buffer)
 
 #endif // FIXTURES_H
