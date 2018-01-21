@@ -29,15 +29,15 @@ namespace {
 		curTm.tm_year = 2015 - 1900;
 		curTm.tm_mon = 3;
 		curTm.tm_mday = 28;
-		static const char* exp = "03/28/15";
+		static const char* exp = "04/28/15";
 		EXPECT_MEMGUARD_RESULT("%D", strlen(exp), exp);
 	}
 
-	TEST_F(Composite, DateSlashPref) {
+	TEST_F(Composite, DatePref) {
 		curTm.tm_year = 2015 - 1900;
 		curTm.tm_mon = 3;
 		curTm.tm_mday = 28;
-		static const char* exp = "03/28/15";
+		static const char* exp = "04/28/15";
 		EXPECT_MEMGUARD_RESULT("%x", strlen(exp), exp);
 	}
 
@@ -45,8 +45,8 @@ namespace {
 		curTm.tm_year = 2015 - 1900;
 		curTm.tm_mon = 3;
 		curTm.tm_mday = 28;
-		static const char* exp = "2015-03-28";
-		EXPECT_MEMGUARD_RESULT("%D", strlen(exp), exp);
+		static const char* exp = "2015-04-28";
+		EXPECT_MEMGUARD_RESULT("%F", strlen(exp), exp);
 	}
 
 	TEST_F(Composite, Time12Hours) {
@@ -59,22 +59,22 @@ namespace {
 
 	TEST_F(Composite, Time24Hours) {
 		curTm.tm_hour = 23;
-		curTm.tm_hour = 15;
+		curTm.tm_min = 15;
 		static const char* exp = "23:15";
 		EXPECT_MEMGUARD_RESULT("%R", strlen(exp), exp);
 	}
 
 	TEST_F(Composite, Time24HoursWithSec) {
 		curTm.tm_hour = 23;
-		curTm.tm_hour = 15;
+		curTm.tm_min = 15;
 		curTm.tm_sec = 42;
 		static const char* exp = "23:15:42";
 		EXPECT_MEMGUARD_RESULT("%T", strlen(exp), exp);
 	}
 
-	TEST_F(Composite, Time24HoursPref) {
+	TEST_F(Composite, TimePref) {
 		curTm.tm_hour = 23;
-		curTm.tm_hour = 15;
+		curTm.tm_min = 15;
 		curTm.tm_sec = 42;
 		static const char* exp = "23:15:42";
 		EXPECT_MEMGUARD_RESULT("%X", strlen(exp), exp);

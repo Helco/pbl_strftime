@@ -53,10 +53,6 @@ namespace {
 		EXPECT_MEMGUARD_RESULT("%%", 1, "%");
 	}
 
-	TEST_F(CopyText, EscapedSinglePercent) {
-		EXPECT_MEMGUARD_RESULT("%", 1, "%");
-	}
-
 	TEST_F(CopyText, EscapedPercentMixed) {
 		EXPECT_MEMGUARD_RESULT("a%%b", 3, "a%b");
 	}
@@ -66,7 +62,7 @@ namespace {
 	}
 
 	TEST_F(CopyText, EscapedPercentOverLength) {
-		EXPECT_MEMGUARD_RESULT("abc%%", 3, "abc");
+		EXPECT_MEMGUARD_RESULT("abc%%", 0, "abc");
 	}
 
 	/*
@@ -82,9 +78,9 @@ namespace {
 		curTm.var = min; \
 		EXPECT_MEMGUARD_RESULT(format, strlen(padding #min), padding #min); \
 	} \
-	TEST_F(SimpleNumerics, name##max) { \
+	TEST_F(SimpleNumerics, name##Max) { \
 		curTm.var = max; \
-		const char* expected = (max > 9 ? padding #max : #max); \
+		const char* expected = (max > 9 ? #max : padding #max); \
 		EXPECT_MEMGUARD_RESULT(format, strlen(expected), expected); \
 	} // remember: pbl_strftime behaviour is undefined when providing illegal values
 
@@ -111,7 +107,7 @@ namespace {
 
 	TEST_F(SimpleNumerics, CenturyOverLength) {
 		curTm.tm_year = 234 - 1900;
-		EXPECT_MEMGUARD_RESULT("abcde%C", 6, "abcde0");
+		EXPECT_MEMGUARD_RESULT("abcde%C", 0, "abcde0");
 	}
 
 	// Day of month
@@ -121,6 +117,12 @@ namespace {
 	}
 
 	TEST_SIMPLENUMERICS_LIMITS(DayOfMonth, tm_mday, "%d", 1, 31, "0");
+
+	// Day of month, space padding
+	TEST_F(SimpleNumerics, DayOfMonthSpacePadding) {
+		curTm.tm_mday = 5;
+		 EXPECT_MEMGUARD_RESULT("%e", 2, " 5");
+	}
 
 	// Hour 24-hour style, zero based and padding
 	TEST_F(SimpleNumerics, Hour24) {
@@ -159,7 +161,7 @@ namespace {
 
 	// Hour 12-hour style, space padding
 	TEST_F(SimpleNumerics, Hour12SpacePadding) {
-		curTm.tm_hour = 2;
+		curTm.tm_hour = 3;
 		EXPECT_MEMGUARD_RESULT("%l", 2, " 3");
 	}
 
@@ -198,7 +200,7 @@ namespace {
 	// Weekday as number, one based from Monday
 	TEST_F(SimpleNumerics, WeekdayOne) {
 		curTm.tm_wday = 3;
-		EXPECT_MEMGUARD_RESULT("%u", 1, "4");
+		EXPECT_MEMGUARD_RESULT("%u", 1, "3");
 	}
 
 	TEST_F(SimpleNumerics, WeekdayOneMin) {
@@ -208,7 +210,7 @@ namespace {
 
 	TEST_F(SimpleNumerics, WeekdayOneMax) {
 		curTm.tm_wday = 6;
-		EXPECT_MEMGUARD_RESULT("%u", 1, "1");
+		EXPECT_MEMGUARD_RESULT("%u", 1, "6");
 	}
 
 	// Weekday as number, zero based from Sunday
@@ -230,24 +232,40 @@ namespace {
 		EXPECT_MEMGUARD_RESULT("%y", 2, "07");
 	}
 	
-	TEST_F(SimpleNumerics, YearCent5Characters) {
+	TEST_F(SimpleNumerics, YearCentPhase5Characters) {
 		curTm.tm_year = 12345 - 1900;
-		EXPECT_MEMGUARD_RESULT("%y", 4, "45");
+		EXPECT_MEMGUARD_RESULT("%y", 2, "45");
 	}
 
 	// Full year
 	TEST_F(SimpleNumerics, FullYear) {
 		curTm.tm_year = 2134 - 1900;
-		EXPECT_MEMGUARD_RESULT("%y", 4, "2134");
+		EXPECT_MEMGUARD_RESULT("%Y", 4, "2134");
 	}
 
 	TEST_F(SimpleNumerics, FullYearPadding) {
 		curTm.tm_year = 407 - 1900;
-		EXPECT_MEMGUARD_RESULT("%y", 4, "0407");
+		EXPECT_MEMGUARD_RESULT("%Y", 4, "0407");
 	}
 
-	TEST_F(SimpleNumerics, Full5Characters) {
+	TEST_F(SimpleNumerics, FullYear5Characters) {
 		curTm.tm_year = 12345 - 1900;
-		EXPECT_MEMGUARD_RESULT("%y", 4, "12345");
+		EXPECT_MEMGUARD_RESULT("%Y", 5, "12345");
+	}
+
+	// day in the year, one based
+	TEST_F(SimpleNumerics, YearDay) {
+		curTm.tm_yday = 53;
+		EXPECT_MEMGUARD_RESULT("%j", 3, "054");
+	}
+
+	TEST_F(SimpleNumerics, YearDayMin) {
+		curTm.tm_yday = 0;
+		EXPECT_MEMGUARD_RESULT("%j", 3, "001");
+	}
+
+	TEST_F(SimpleNumerics, YearDayMax) {
+		curTm.tm_yday = 365;
+		EXPECT_MEMGUARD_RESULT("%j", 3, "366");
 	}
 }

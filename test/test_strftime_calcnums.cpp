@@ -29,46 +29,25 @@ namespace {
 		EXPECT_MEMGUARD_RESULT("%G", 4, "1998");
 
 		curTm.tm_year = 1999 - 1900;
-		curTm.tm_wday = 0;
+		curTm.tm_wday = 1;
 		curTm.tm_yday = 0; // Monday, 1nd January 1999
 		EXPECT_MEMGUARD_RESULT("%G", 4, "1999");
 
 		curTm.tm_year = 1999 - 1900;
-		curTm.tm_wday = 1;
+		curTm.tm_wday = 2;
 		curTm.tm_yday = 0; // Tuesday, 1nd January 1999
 		EXPECT_MEMGUARD_RESULT("%G", 4, "1999");
 
 		// TODO: Add more week based year tests here
 	}
 
-	// Count of days in the years
-	TEST_F(CalculatedNums, YearDayCount) {
-		curTm.tm_year = 2001 - 1900;
-		EXPECT_MEMGUARD_RESULT("%j", 3, "365");
-	}
-
-	TEST_F(CalculatedNums, YearDayCountSimpleLeap) {
-		curTm.tm_year = 2004 - 1900;
-		EXPECT_MEMGUARD_RESULT("%j", 3, "366");
-	}
-
-	TEST_F(CalculatedNums, YearDayCountNoCenturyLeap) {
-		curTm.tm_year = 2100 - 1900;
-		EXPECT_MEMGUARD_RESULT("%j", 3, "365");
-	}
-
-	TEST_F(CalculatedNums, YearDayCountFourCenturyLeap) {
-		curTm.tm_year = 2000 - 1900;
-		EXPECT_MEMGUARD_RESULT("%j", 3, "366");
-	}
-
 	// Note: I used https://www.timeanddate.com to work this out...
 	// week number, where weeks start on Sunday, week 1 contains first Sunday in a year, earlier days are in week 0
 	TEST_F(CalculatedNums, WeekSundayWZW) {
 		curTm.tm_wday = 3;
-		curTm.tm_yday = 4 * 7 + 4; // Year started on Monday + 4 weeks
+		curTm.tm_yday = 32;
 		curTm.tm_year = 2001 - 1900; // no leap year
-		EXPECT_MEMGUARD_RESULT("%U", 2, "04");
+		EXPECT_MEMGUARD_RESULT("%U", 2, "05");
 	}
 
 	TEST_F(CalculatedNums, WeekSundayWZWOneWeek) {

@@ -47,7 +47,7 @@ namespace {
 
 	TEST_F(SimpleTexts, AbbrMonthAlt) {
 		curTm.tm_mon = 5;
-		EXPECT_MEMGUARD_RESULT("%h", 4, "June");
+		EXPECT_MEMGUARD_RESULT("%h", 3, "Jun");
 	}
 
 	// Full month
