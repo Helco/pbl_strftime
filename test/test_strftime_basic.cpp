@@ -65,6 +65,18 @@ namespace {
 		EXPECT_MEMGUARD_RESULT("abc%%", 0, "abc");
 	}
 
+	TEST_F(CopyText, Unicode) {
+		EXPECT_MEMGUARD_RESULT("a\xc3\xbc", 3, "a\xc3\xbc"); // LATIN SMALL LETTER U WITH DIAERESIS 
+	}
+
+	TEST_F(CopyText, Unicode3Byte) {
+		EXPECT_MEMGUARD_RESULT("\xe1\x9a\xb1", 3, "\xe1\x9a\xb1"); // RUNIC LETTER RAIDO
+	}
+
+	TEST_F(CopyText, UnicodeOverLength) {
+		EXPECT_MEMGUARD_RESULT("\xf0\x9f\x98\x82", 0, ""); // FACE WITH TEARS OF JOY
+	}
+
 	/*
 	 * Can it print the simple numeric values
 	 */

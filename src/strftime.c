@@ -20,6 +20,18 @@ static const char* s_prefDateTimeFormat = "%a %b %e %H:%M:%S %Y";
 static const char* s_prefTimeFormat = "%H:%M:%S";
 static const char* s_prefDateFormat = "%m/%d/%y";
 
+static size_t prv_getCharLength(char firstChar) {
+	unsigned char firstByte = (unsigned char)firstChar;
+	if ((firstByte & 0xE0) == 0xC0) // 110xxxxx
+		return 2;
+	else if ((firstByte & 0xF0) == 0xE0) // 1110xxxx
+		return 3;
+	else if ((firstByte & 0xF8) == 0xF0) // 11110xxx
+		return 4;
+	else
+		return 1;
+}
+
 static unsigned int prv_uilog10(unsigned int val) {
 	static const unsigned int s_pow10[] = {
 		1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000
@@ -78,10 +90,23 @@ static int prv_getWeekNumISO(const struct tm* timp) {
 	return val;
 }
 
+static inline int prv_printChar(const char** str, char** bufferPtr, size_t* remSizePtr) {
+	size_t length = prv_getCharLength(**str);
+	if (length > *remSizePtr)
+		return 0;
+
+	while (length) {
+		*(*bufferPtr)++ = *(*str)++;
+		length--;
+		(*remSizePtr)--;
+	}
+	return 1;
+}
+
 static inline int prv_printString(const char* str, char** bufferPtr, size_t* remSizePtr) {
 	while (*str && *remSizePtr) {
-		*(*bufferPtr)++ = *str++;
-		(*remSizePtr)--;
+		if (!prv_printChar(&str, bufferPtr, remSizePtr))
+			return 0;
 	}
 	return *str == '\0';
 }
@@ -154,9 +179,9 @@ size_t FUNC_PBL_STRFTIME(char* buffer, size_t maxSize, const char* format, const
 
 	int overLength = 0;
 	char* const bufferStart = buffer;
-	size_t remSize = maxSize;
+	size_t remSize = maxSize - 1; // keep one for the terminator
 
-	while (--remSize && *format) {
+	while (remSize && *format && !overLength) {
 		if (*format == '%') {
 			format++;
 			switch (*format) {
@@ -334,14 +359,18 @@ size_t FUNC_PBL_STRFTIME(char* buffer, size_t maxSize, const char* format, const
 
 				default: { // invalid format
 					*buffer++ = '%';
-					if (*format && --remSize > 0)
-						*buffer++ = *format;
+					remSize--;
+					if (!prv_printChar(&format, &buffer, &remSize))
+						overLength = 1;
+					else
+						format--; // it gets incremented two lines down again
 				}
 			}
 			format++;
 		}
 		else {
-			*buffer++ = *format++;
+			if (!prv_printChar(&format, &buffer, &remSize))
+				overLength = 1;
 		}
 	}
 
