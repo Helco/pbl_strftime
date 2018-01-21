@@ -37,7 +37,6 @@ namespace {
 	};
 
 	TEST_F(CopyText, NoText) {
-		expCharsWritten = pbl_strftime(buffer, BufferSize, "", &curTm);
 		EXPECT_MEMGUARD_RESULT("", 0, "");
 	}
 
