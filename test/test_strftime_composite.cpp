@@ -10,7 +10,10 @@ namespace {
 	* only basic functionality is tested as the parts are tested in their own test cases
 	*/
 	class Composite : public MemoryGuardFixture<64> {
-		// no overlength test here either
+	};
+
+	class Composite6Bytes : public MemoryGuardFixture<6> {
+		// to test the oversize behaviour
 	};
 
 	TEST_F(Composite, DateTimePref) {
@@ -70,6 +73,22 @@ namespace {
 		curTm.tm_sec = 42;
 		static const char* exp = "23:15:42";
 		EXPECT_MEMGUARD_RESULT("%T", strlen(exp), exp);
+	}
+
+	TEST_F(Composite6Bytes, Time24HoursWithSecOverLength) {
+		curTm.tm_hour = 23;
+		curTm.tm_min = 15;
+		curTm.tm_sec = 42;
+		static const char* exp = "23:15";
+		EXPECT_MEMGUARD_RESULT("%T", 0, exp);
+	}
+
+	TEST_F(Composite6Bytes, Time24HoursWithSecOverLength2) {
+		curTm.tm_hour = 23;
+		curTm.tm_min = 15;
+		curTm.tm_sec = 42;
+		static const char* exp = "T23:1";
+		EXPECT_MEMGUARD_RESULT("T%T", 0, exp);
 	}
 
 	TEST_F(Composite, TimePref) {

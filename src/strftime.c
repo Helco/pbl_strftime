@@ -165,12 +165,13 @@ static inline int prv_printComposite(
 	char **bufferPtr,
 	size_t *remSizePtr) {
 
-	size_t result = FUNC_PBL_STRFTIME(*bufferPtr, *remSizePtr, format, timp);
+	size_t outLen;
+	size_t result = outLen = FUNC_PBL_STRFTIME(*bufferPtr, *remSizePtr + 1, format, timp); // add one for the terminator
 	if (result == 0)
-		return 0;
-	*bufferPtr += result;
-	*remSizePtr += result;
-	return 1;
+		outLen = strlen(*bufferPtr);
+	*bufferPtr += outLen;
+	*remSizePtr += outLen;
+	return result;
 }
 
 size_t FUNC_PBL_STRFTIME(char *buffer, size_t maxSize, const char *format, const struct tm *timp) {
