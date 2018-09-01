@@ -1,24 +1,24 @@
 #include "strftime.h"
 
-static const char* s_abbrWeekday[] = {
+static const char *s_abbrWeekday[] = {
 	"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
 };
-static const char* s_weekday[] = {
+static const char *s_weekday[] = {
 	"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 };
-static const char* s_abbrMonth[] = {
+static const char *s_abbrMonth[] = {
 	"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
-static const char* s_month[] = {
+static const char *s_month[] = {
 	"January", "February", "March", "April", "May", "June", "July",
 	"August", "September","October", "November", "December"
 };
-static const char* s_12hourSpec[] = {
+static const char *s_12hourSpec[] = {
 	"AM", "PM"
 };
-static const char* s_prefDateTimeFormat = "%a %b %e %H:%M:%S %Y";
-static const char* s_prefTimeFormat = "%H:%M:%S";
-static const char* s_prefDateFormat = "%m/%d/%y";
+static const char *s_prefDateTimeFormat = "%a %b %e %H:%M:%S %Y";
+static const char *s_prefTimeFormat = "%H:%M:%S";
+static const char *s_prefDateFormat = "%m/%d/%y";
 
 static size_t prv_getCharLength(char firstChar) {
 	unsigned char firstByte = (unsigned char)firstChar;
@@ -62,7 +62,7 @@ static inline int prv_getIsLeapYear(int year) {
 	return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
 }
 
-static int prv_getWeekNumISO(const struct tm* timp) {
+static int prv_getWeekNumISO(const struct tm *timp) {
 	// see https://github.com/idunham/musl/blob/master/src/time/strftime.c#L21
 
 	int val = (timp->tm_yday + 7 - (timp->tm_wday + 6) % 7) / 7;
@@ -90,7 +90,7 @@ static int prv_getWeekNumISO(const struct tm* timp) {
 	return val;
 }
 
-static inline int prv_printChar(const char** str, char** bufferPtr, size_t* remSizePtr) {
+static inline int prv_printChar(const char **str, char **bufferPtr, size_t *remSizePtr) {
 	size_t length = prv_getCharLength(**str);
 	if (length > *remSizePtr)
 		return 0;
@@ -103,7 +103,7 @@ static inline int prv_printChar(const char** str, char** bufferPtr, size_t* remS
 	return 1;
 }
 
-static inline int prv_printString(const char* str, char** bufferPtr, size_t* remSizePtr) {
+static inline int prv_printString(const char *str, char **bufferPtr, size_t *remSizePtr) {
 	while (*str && *remSizePtr) {
 		if (!prv_printChar(&str, bufferPtr, remSizePtr))
 			return 0;
@@ -115,8 +115,8 @@ static int prv_printMinPaddedNum(
 	unsigned int num,
 	size_t length,
 	char paddingChar,
-	char** bufferPtr,
-	size_t* remSizePtr) {
+	char **bufferPtr,
+	size_t *remSizePtr) {
 
 	int overLength = 0;
 	if (length > *remSizePtr) {
@@ -129,7 +129,7 @@ static int prv_printMinPaddedNum(
 			return 0;
 	}
 
-	char* writePtr = *bufferPtr;
+	char *writePtr = *bufferPtr;
 	*bufferPtr += length;
 	do {
 		writePtr[--length] = '0' + num % 10;
@@ -149,8 +149,8 @@ static inline int prv_printMaxPaddedNum(
 	unsigned int num,
 	size_t minLength,
 	char paddingChar,
-	char** bufferPtr,
-	size_t* remSizePtr) {
+	char **bufferPtr,
+	size_t *remSizePtr) {
 
 	size_t length = (size_t)prv_uilog10(num) + 1;
 	if (length < minLength)
@@ -160,10 +160,10 @@ static inline int prv_printMaxPaddedNum(
 }
 
 static inline int prv_printComposite(
-	const char* format,
-	const struct tm* timp,
-	char** bufferPtr,
-	size_t* remSizePtr) {
+	const char *format,
+	const struct tm *timp,
+	char **bufferPtr,
+	size_t *remSizePtr) {
 
 	size_t result = FUNC_PBL_STRFTIME(*bufferPtr, *remSizePtr, format, timp);
 	if (result == 0)
@@ -173,12 +173,12 @@ static inline int prv_printComposite(
 	return 1;
 }
 
-size_t FUNC_PBL_STRFTIME(char* buffer, size_t maxSize, const char* format, const struct tm* timp) {
+size_t FUNC_PBL_STRFTIME(char *buffer, size_t maxSize, const char *format, const struct tm *timp) {
 	if (buffer == NULL || maxSize == 0 || format == NULL || timp == NULL)
 		return 0;
 
 	int overLength = 0;
-	char* const bufferStart = buffer;
+	char *const bufferStart = buffer;
 	size_t remSize = maxSize - 1; // keep one for the terminator
 
 	while (remSize && *format && !overLength) {
